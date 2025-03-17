@@ -42,7 +42,7 @@ from copy import copy
 from math import *
 from pkg_resources import load_entry_point
 from http.server import SimpleHTTPRequestHandler
-from cStringIO import StringIO
+from io import StringIO
 from numpy import int32
 from numpy import uint8
 from EXIF import *
