@@ -41,7 +41,7 @@ from warnings import warn
 from copy import copy
 from math import *
 from pkg_resources import load_entry_point
-from SimpleHTTPServer import SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler
 from types import IntType, LongType, FloatType, InstanceType
 from cStringIO import StringIO
 from numpy import int32
