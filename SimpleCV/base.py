@@ -42,7 +42,6 @@ from copy import copy
 from math import *
 from pkg_resources import load_entry_point
 from http.server import SimpleHTTPRequestHandler
-from types import IntType, LongType, FloatType, InstanceType
 from cStringIO import StringIO
 from numpy import int32
 from numpy import uint8
@@ -161,7 +160,7 @@ def is_number(n):
 
     Returns: Type
     """
-    return type(n) in (IntType, LongType, FloatType)
+    isinstance(n, (int, float))
 
 def is_tuple(n):
     """
