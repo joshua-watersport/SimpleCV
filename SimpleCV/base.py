@@ -45,7 +45,7 @@ from http.server import SimpleHTTPRequestHandler
 from io import StringIO
 from numpy import int32
 from numpy import uint8
-from EXIF import *
+from SimpleCV.EXIF import *
 from pygame import gfxdraw
 from pickle import *
 
