@@ -21,7 +21,7 @@
 # Work by (or inspired by) Manish Rai Jain <manishrjain@gmail.com>:
 #
 #    improved error reporting, proper multipart MIME boundary creation,
-#    use of urllib2 to allow uploads through a proxy, upload accepts
+#    use of urllib.request to allow uploads through a proxy, upload accepts
 #    raw data as well as a filename
 #
 # Copyright 2005 Brian "Beej Jorgensen" Hall <beej@beej.us>
@@ -48,7 +48,7 @@ import sys
 import md5
 import string
 import urllib
-import urllib2
+import urllib.request
 import mimetools
 import httplib
 import os.path
@@ -341,11 +341,11 @@ class FlickrAPI:
         postData = body.encode("utf_8") + data + \
                 ("--%s--" % (boundary)).encode("utf_8")
 
-        request = urllib2.Request(url)
+        request = urllib.request.Request(url)
         request.add_data(postData)
         request.add_header("Content-Type", \
                 "multipart/form-data; boundary=%s" % boundary)
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
         rspXML = response.read()
 
         return XMLNode.parseXML(rspXML)

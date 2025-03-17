@@ -7,7 +7,7 @@ import warnings
 import time
 import socket
 import re
-import urllib2
+import urllib.request
 import types
 import SocketServer
 import threading
@@ -210,7 +210,7 @@ def download_and_extract(URL):
     tmpdir = tempfile.mkdtemp()
     filename = os.path.basename(URL)
     path = tmpdir + "/" + filename
-    zdata = urllib2.urlopen(URL)
+    zdata = urllib.request.urlopen(URL)
 
     print( "Saving file to disk please wait....")
     with open(path, "wb") as local_file:

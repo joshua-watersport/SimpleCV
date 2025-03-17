@@ -1071,17 +1071,17 @@ class JpegStreamReader(threading.Thread):
             self.url = re.sub("//\S+@", "//", self.url)
             user, password = authstuff.split(":")
 
-            #thank you missing urllib2 manual
-            #http://www.voidspace.org.uk/python/articles/urllib2.shtml#id5
-            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            #thank you missing urllib.request manual
+            #http://www.voidspace.org.uk/python/articles/urllib.request.shtml#id5
+            password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             password_mgr.add_password(None, self.url, user, password)
 
-            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-            opener = urllib2.build_opener(handler)
+            handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
+            opener = urllib.request.build_opener(handler)
 
             f = opener.open(self.url)
         else:
-            f = urllib2.urlopen(self.url)
+            f = urllib.request.urlopen(self.url)
 
         headers = f.info()
         if (headers.has_key("content-type")):

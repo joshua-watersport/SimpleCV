@@ -18,6 +18,7 @@ import scipy.linalg as nla  # for linear algebra / least squares
 import math # math... who does that
 import copy # for deep copy
 #import scipy.stats.mode as spsmode
+import urllib.request
 
 class ColorSpace:
     """
@@ -184,9 +185,9 @@ class ImageSet(list):
 
 
         while len(add_set) < number:
-            opener = urllib2.build_opener()
+            opener = urllib.request.build_opener()
             opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-            url = ("http://www.google.com/search?tbm=isch&q=" + urllib2.quote(tag) +
+            url = ("http://www.google.com/search?tbm=isch&q=" + urllib.request.quote(tag) +
                    size_param + "&start=" + str(candidate_count))
             page = opener.open(url)
             soup = BeautifulSoup(page)
@@ -936,8 +937,8 @@ class Image:
         if isinstance(source, basestring) and (source.lower().startswith("http://") or source.lower().startswith("https://")):
             #try:
             # added spoofed user agent for images that are blocking bots (like wikipedia)
-            req = urllib2.Request(source, headers={'User-Agent' : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.54 Safari/536.5"})
-            img_file = urllib2.urlopen(req)
+            req = urllib.request.Request(source, headers={'User-Agent' : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.54 Safari/536.5"})
+            img_file = urllib.request.urlopen(req)
             #except:
             #if verbose:
                 #print "Couldn't open Image from URL:" + source
