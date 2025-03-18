@@ -39,9 +39,9 @@ class DrawingLayer:
     width = 0
     height = 0
 
-    def __init__(self, wh):
-        width, height = wh
+    def __init__(self, xxx_todo_changeme):
         #pg.init()
+        (width, height) = xxx_todo_changeme
         if( not pg.font.get_init() ):
             pg.font.init()
 

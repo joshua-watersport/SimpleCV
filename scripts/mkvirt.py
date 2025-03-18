@@ -1,10 +1,11 @@
+from __future__ import print_function
 import os
 import virtualenv, textwrap
 
 here = os.path.dirname(os.path.abspath(__file__))
 base_dir = os.path.dirname(here)
 
-print( "Creating SimpleCV Bootstrap Install Script: simplecv-bootstrap.py")
+print("Creating SimpleCV Bootstrap Install Script: simplecv-bootstrap.py")
 
 output = virtualenv.create_bootstrap_script(textwrap.dedent("""
 import os, subprocess
@@ -14,9 +15,9 @@ def after_install(options, home_dir):
     logger.notify('Installing SimpleCV into Virtual Environment')
 
     os.chdir(home_dir)
-    print( 'Current Directory:', os.getcwd())
-    print( 'dir list:', os.listdir(os.getcwd()))
-    print( 'Symlinking OpenCV')
+    print 'Current Directory:', os.getcwd()
+    print 'dir list:', os.listdir(os.getcwd())
+    print 'Symlinking OpenCV'
     os.symlink('/usr/local/lib/python2.7/dist-packages/cv2.so', os.path.join(os.getcwd(),'lib/python2.7/site-packages/cv2.so'))
     os.symlink('/usr/local/lib/python2.7/dist-packages/cv.py', os.path.join(os.getcwd(),'lib/python2.7/site-packages/cv.py'))
     subprocess.call(['pwd'])
@@ -24,11 +25,11 @@ def after_install(options, home_dir):
     os.chdir('src')
     subprocess.call(['wget','-O','pygame.tar.gz','http://github.com/xamox/pygame/tarball/master'])
     subprocess.call(['tar','zxvf','pygame.tar.gz'])
-    print( 'Runing setup for pygame')
+    print 'Runing setup for pygame'
     subprocess.call(['ls'])
     os.chdir('../')
-    print( 'Current Directory:', os.getcwd())
-    print( os.getcwd())
+    print 'Current Directory:', os.getcwd()
+    print os.getcwd()
     subprocess.call(['./bin/python','src/xamox-pygame-3e48d10/setup.py','install'])
 
 

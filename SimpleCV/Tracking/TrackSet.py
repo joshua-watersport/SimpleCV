@@ -20,7 +20,7 @@ class TrackSet(FeatureSet):
     **EXAMPLE**
 
     >>> image = Image("/path/to/image.png")
-    >>> ts = image.track("camshift", img1=image )  #ts is the track set
+    >>> ts = image.track("camshift", img1=image, bb)  #ts is the track set
     >>> ts.draw()
     >>> ts.x()
     """
@@ -28,7 +28,7 @@ class TrackSet(FeatureSet):
         import cv2
     except ImportError:
         warnings.warn("OpenCV >= 2.3.1 required.")
-    
+
     def __init__(self):
         self.kalman = None
         self.predict_pt = (0,0)

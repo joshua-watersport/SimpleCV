@@ -1,38 +1,48 @@
 #!/usr/bin/python
 
 # SimpleCV system includes
+from __future__ import print_function
+from __future__ import absolute_import
 import os
 import sys
 import warnings
 import time
 import socket
 import re
-import urllib.request
+
+try:
+    from urllib.request import urlopen
+except:
+    from urllib2 import urlopen
 import types
-import socketserver
+
+try:
+    import socketserver
+except:
+    import SocketServer as socketserver
 import threading
 import tempfile
 import zipfile
 import pickle
-import glob #for directory scanning
-import abc #abstract base class
+import glob  # for directory scanning
+import abc  # abstract base class
 import colorsys
 import logging
 import pygame as pg
 import scipy.ndimage as ndimage
-import scipy.stats.stats as sss  #for auto white balance
+import scipy.stats.stats as sss  # for auto white balance
 import scipy.cluster.vq as scv
 import scipy.linalg as nla  # for linear algebra / least squares
-import math # math... who does that
-import copy # for deep copy
+import math  # math... who does that
+import copy  # for deep copy
 import numpy as np
 import scipy.spatial.distance as spsd
-import scipy.cluster.vq as cluster #for kmeans
+import scipy.cluster.vq as cluster  # for kmeans
 import platform
 import copy
 import types
 import time
-import itertools #for track
+import itertools  # for track
 
 from numpy import linspace
 from scipy.interpolate import UnivariateSpline
@@ -40,33 +50,58 @@ from warnings import warn
 from copy import copy
 from math import *
 from pkg_resources import load_entry_point
-from http.server import SimpleHTTPRequestHandler
-from io import StringIO
+
+try:
+    from http.server import SimpleHTTPRequestHandler
+except ImportError:
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
+try:
+    from types import IntType, LongType, FloatType, InstanceType
+
+    REAL_TYPE = (IntType, LongType, FloatType)
+except ImportError:
+    REAL_TYPE = (int, float)
+    InstanceType = object
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 from numpy import int32
 from numpy import uint8
 from .EXIF import *
-from pygame import gfxdraw
+import pygame
 from pickle import *
 
 # SimpleCV library includes
+#
+# this is a hack for travis to include the
+# global OpenCV python module built built before
+import sys
+
+sys.path.append('/home/travis/virtualenv/python3.4_with_system_site_packages/lib/python3.4/site-packages')
+sys.path.append('/usr/local/lib/python3.4/site-packages')
 try:
     import cv2.cv as cv
 except ImportError:
     try:
         import cv
     except ImportError:
-        raise ImportError("Cannot load OpenCV library which is required by SimpleCV")
+        try:
+            import cv2 as cv
+        except ImportError:
+            raise ImportError(str(sys.path))
+            # raise ImportError("Cannot load OpenCV library which is required by SimpleCV")
 
-
-#optional libraries
+# optional libraries
 PIL_ENABLED = True
 try:
     from PIL import Image as pil
     from PIL import ImageFont as pilImageFont
     from PIL import ImageDraw as pilImageDraw
     from PIL import GifImagePlugin
+
     getheader = GifImagePlugin.getheader
-    getdata   = GifImagePlugin.getdata
+    getdata = GifImagePlugin.getdata
 except ImportError:
     try:
         import Image as pil
@@ -92,7 +127,6 @@ try:
 except ImportError:
     OCR_ENABLED = False
 
-
 PYSCREENSHOT_ENABLED = True
 try:
     import pyscreenshot
@@ -104,11 +138,12 @@ try:
     try:
         import orange
     except ImportError:
-        import Orange; import orange
+        import Orange;
+        import orange
 
-    import orngTest #for cross validation
+    import orngTest  # for cross validation
     import orngStat
-    import orngEnsemble # for bagging / boosting
+    import orngEnsemble  # for bagging / boosting
 
 except ImportError:
     ORANGE_ENABLED = False
@@ -117,11 +152,12 @@ VIMBA_ENABLED = True
 try:
     import pymba
 except ImportError:
-    #TODO Log an error the pymba is not installed
+    # TODO Log an error the pymba is not installed
     VIMBA_ENABLED = False
 except Exception:
-    #TODO Log an error that AVT Vimba DLL is not installed properly
+    # TODO Log an error that AVT Vimba DLL is not installed properly
     VIMBA_ENABLED = False
+
 
 class InitOptionsHandler(object):
     """
@@ -145,6 +181,7 @@ class InitOptionsHandler(object):
         os.environ["SDL_VIDEODRIVER"] = "dummy"
         self.headless = True
 
+
 init_options_handler = InitOptionsHandler()
 
 try:
@@ -152,14 +189,16 @@ try:
 except ImportError:
     init_options_handler.set_headless()
 
-#couple quick typecheck helper functions
+
+# couple quick typecheck helper functions
 def is_number(n):
     """
     Determines if it is a number or not
 
     Returns: Type
     """
-    isinstance(n, (int, float))
+    return type(n) in REAL_TYPE
+
 
 def is_tuple(n):
     """
@@ -169,6 +208,7 @@ def is_tuple(n):
     """
     return type(n) == tuple
 
+
 def reverse_tuple(n):
     """
     Reverses a tuple
@@ -176,6 +216,7 @@ def reverse_tuple(n):
     Returns: Tuple
     """
     return tuple(reversed(n))
+
 
 def find(f, seq):
     """
@@ -188,12 +229,13 @@ def find(f, seq):
             return True
     return False
 
+
 def test():
     """
     This function is meant to run builtin unittests
     """
 
-    print( 'unit test')
+    print('unit test')
 
 
 def download_and_extract(URL):
@@ -208,14 +250,14 @@ def download_and_extract(URL):
     tmpdir = tempfile.mkdtemp()
     filename = os.path.basename(URL)
     path = tmpdir + "/" + filename
-    zdata = urllib.request.urlopen(URL)
+    zdata = urlopen(URL)
 
-    print( "Saving file to disk please wait....")
+    print("Saving file to disk please wait....")
     with open(path, "wb") as local_file:
         local_file.write(zdata.read())
 
     zfile = zipfile.ZipFile(path)
-    print( "Extracting zipfile")
+    print("Extracting zipfile")
     try:
         zfile.extractall(tmpdir)
     except:
@@ -224,11 +266,13 @@ def download_and_extract(URL):
 
     return tmpdir
 
+
 def int_to_bin(i):
     """Integer to two bytes"""
     i1 = i % 256
-    i2 = int(i/256)
+    i2 = int(i / 256)
     return chr(i1) + chr(i2)
+
 
 def npArray2cvMat(inputMat, dataType=cv.CV_32FC1):
     """
@@ -236,30 +280,31 @@ def npArray2cvMat(inputMat, dataType=cv.CV_32FC1):
 
     Returns: cvMatrix
     """
-    if( type(inputMat) == np.ndarray ):
+    if (type(inputMat) == np.ndarray):
         sz = len(inputMat.shape)
         temp_mat = None
-        if( dataType == cv.CV_32FC1 or dataType == cv.CV_32FC2 or dataType == cv.CV_32FC3 or dataType == cv.CV_32FC4 ):
+        if (dataType == cv.CV_32FC1 or dataType == cv.CV_32FC2 or dataType == cv.CV_32FC3 or dataType == cv.CV_32FC4):
             temp_mat = np.array(inputMat, dtype='float32')
-        elif( dataType == cv.CV_8UC1 or  dataType == cv.CV_8UC2 or dataType == cv.CV_8UC3 or dataType == cv.CV_8UC3):
-            temp_mat = np.array(inputMat,dtype='uint8')
+        elif (dataType == cv.CV_8UC1 or dataType == cv.CV_8UC2 or dataType == cv.CV_8UC3 or dataType == cv.CV_8UC3):
+            temp_mat = np.array(inputMat, dtype='uint8')
         else:
             logger.warning("MatrixConversionUtil: the input matrix type is not supported")
             return None
-        if( sz == 1 ): #this needs to be changed so we can do row/col vectors
+        if (sz == 1):  # this needs to be changed so we can do row/col vectors
             retVal = cv.CreateMat(inputMat.shape[0], 1, dataType)
             cv.SetData(retVal, temp_mat.tostring(), temp_mat.dtype.itemsize * temp_mat.shape[0])
-        elif( sz == 2 ):
+        elif (sz == 2):
             retVal = cv.CreateMat(temp_mat.shape[0], temp_mat.shape[1], dataType)
             cv.SetData(retVal, temp_mat.tostring(), temp_mat.dtype.itemsize * temp_mat.shape[1])
-        elif( sz > 2 ):
+        elif (sz > 2):
             logger.warning("MatrixConversionUtil: the input matrix type is not supported")
             return None
         return retVal
     else:
         logger.warning("MatrixConversionUtil: the input matrix type is not supported")
 
-#Logging system - Global elements
+
+# Logging system - Global elements
 
 consoleHandler = logging.StreamHandler()
 formatter = logging.Formatter('%(levelname)s: %(message)s')
@@ -269,28 +314,33 @@ logger.addHandler(consoleHandler)
 
 try:
     import IPython
+
     ipython_version = IPython.__version__
 except ImportError:
     ipython_version = None
 
-#This is used with sys.excepthook to log all uncaught exceptions.
-#By default, error messages ARE print to stderr.
+
+# This is used with sys.excepthook to log all uncaught exceptions.
+# By default, error messages ARE print to stderr.
 def exception_handler(excType, excValue, traceback):
     logger.error("", exc_info=(excType, excValue, traceback))
 
-    #print "Hey!",excValue
-    #excValue has the most important info about the error.
-    #It'd be possible to display only that and hide all the (unfriendly) rest.
+    # print "Hey!",excValue
+    # excValue has the most important info about the error.
+    # It'd be possible to display only that and hide all the (unfriendly) rest.
+
 
 sys.excepthook = exception_handler
 
-def ipython_exception_handler(shell, excType, excValue, traceback,tb_offset=0):
+
+def ipython_exception_handler(shell, excType, excValue, traceback, tb_offset=0):
     logger.error("", exc_info=(excType, excValue, traceback))
 
 
-#The two following functions are used internally.
+# The two following functions are used internally.
 def init_logging(log_level):
     logger.setLevel(log_level)
+
 
 def read_logging_level(log_level):
     levels_dict = {
@@ -301,14 +351,15 @@ def read_logging_level(log_level):
         5: logging.CRITICAL, "critical": logging.CRITICAL
     }
 
-    if isinstance(log_level,str):
+    if isinstance(log_level, str):
         log_level = log_level.lower()
 
     if log_level in levels_dict:
         return levels_dict[log_level]
     else:
-        print( "The logging level given is not valid")
+        print("The logging level given is not valid")
         return None
+
 
 def get_logging_level():
     """
@@ -322,9 +373,10 @@ def get_logging_level():
         50: "CRITICAL"
     }
 
-    print( "The current logging level is:", levels_dict[logger.getEffectiveLevel()])
+    print("The current logging level is:", levels_dict[logger.getEffectiveLevel()])
 
-def set_logging(log_level,myfilename = None):
+
+def set_logging(log_level, myfilename=None):
     """
     This function sets the threshold for the logging system and, if desired,
     directs the messages to a logfile. Level options:
@@ -347,9 +399,8 @@ def set_logging(log_level,myfilename = None):
             else:
                 ip = get_ipython()
                 ip.set_custom_exc((Exception,), ipython_exception_handler)
-        except NameError: #In case the interactive shell is not being used
+        except NameError:  # In case the interactive shell is not being used
             sys.exc_clear()
-
 
     level = read_logging_level(log_level)
 
@@ -358,69 +409,71 @@ def set_logging(log_level,myfilename = None):
         fileHandler.setLevel(level)
         fileHandler.setFormatter(formatter)
         logger.addHandler(fileHandler)
-        logger.removeHandler(consoleHandler) #Console logging is disabled.
-        print( "Now logging to",myfilename,"with level",log_level)
+        logger.removeHandler(consoleHandler)  # Console logging is disabled.
+        print("Now logging to", myfilename, "with level", log_level)
     elif level:
-        print( "Now logging with level",log_level)
+        print("Now logging with level", log_level)
 
     logger.setLevel(level)
 
+
 def system():
     """
-    
+
     **SUMMARY**
-    
+
     Output of this function includes various informations related to system and library.
-    
+
     Main purpose:
     - While submiting a bug, report the output of this function
     - Checking the current version and later upgrading the library based on the output
-    
+
     **RETURNS**
-    
+
     None
 
     **EXAMPLE**
-      
+
       >>> import SimpleCV
       >>> SimpleCV.system()
-      
-      
-    """
-    try :
-        import platform
-        print( "System : ", platform.system())
-        print( "OS version : ", platform.version())
-        print( "Python version :", platform.python_version())
-        try :
-            from cv2 import __version__
-            print( "Open CV version : " + __version__)
-        except ImportError :
-            print( "Open CV2 version : " + "2.1")
-        if (PIL_ENABLED) :
-            print( "PIL version : ", pil.VERSION)
-        else :
-            print( "PIL module not installed")
-        if (ORANGE_ENABLED) :
-            print( "Orange Version : " + orange.version)
-        else :
-            print( "Orange module not installed")
-        try :
-            import pygame as pg
-            print( "PyGame Version : " + pg.__version__)
-        except ImportError:
-            print( "PyGame module not installed")
-        try :
-            import pickle
-            print( "Pickle Version : " + pickle.__version__)
-        except :
-            print( "Pickle module not installed")
 
-    except ImportError :
-        print( "You need to install Platform to use this function")
-        print( "to install you can use:")
-        print( "easy_install platform")
+
+    """
+    try:
+        import platform
+        print("System : ", platform.system())
+        print("OS version : ", platform.version())
+        print("Python version :", platform.python_version())
+        try:
+            from cv2 import __version__
+            print("Open CV version : " + __version__)
+        except ImportError:
+            print("Open CV2 version : " + "2.1")
+        if (PIL_ENABLED):
+            print("PIL version : ", pil.VERSION)
+        else:
+            print("PIL module not installed")
+        if (ORANGE_ENABLED):
+            print("Orange Version : " + orange.version)
+        else:
+            print("Orange module not installed")
+        try:
+            import pygame as pg
+            print("PyGame Version : " + pg.__version__)
+        except ImportError:
+            print("PyGame module not installed")
+        try:
+            import pickle
+            print("Pickle Version : " + pickle.__version__)
+        except:
+            print("Pickle module not installed")
+
+    except ImportError:
+        print("You need to install Platform to use this function")
+        print("to install you can use:")
+        print("easy_install platform")
     return
+
 
 class LazyProperty(object):
 
@@ -434,11 +487,12 @@ class LazyProperty(object):
         result = obj.__dict__[self.__name__] = self._func(obj)
         return result
 
-#supported image formats regular expression ignoring case
-IMAGE_FORMATS = ('*.[bB][mM][Pp]','*.[Gg][Ii][Ff]','*.[Jj][Pp][Gg]','*.[jJ][pP][eE]',
-'*.[jJ][Pp][Ee][Gg]','*.[pP][nN][gG]','*.[pP][bB][mM]','*.[pP][gG][mM]','*.[pP][pP][mM]',
-'*.[tT][iI][fF]','*.[tT][iI][fF][fF]','*.[wW][eE][bB][pP]')
 
-#maximum image size -
-MAX_DIMENSION = 2*6000 # about twice the size of a full 35mm images - if you hit this, you got a lot data.
+# supported image formats regular expression ignoring case
+IMAGE_FORMATS = ('*.[bB][mM][Pp]', '*.[Gg][Ii][Ff]', '*.[Jj][Pp][Gg]', '*.[jJ][pP][eE]',
+                 '*.[jJ][Pp][Ee][Gg]', '*.[pP][nN][gG]', '*.[pP][bB][mM]', '*.[pP][gG][mM]', '*.[pP][pP][mM]',
+                 '*.[tT][iI][fF]', '*.[tT][iI][fF][fF]', '*.[wW][eE][bB][pP]')
+
+# maximum image size -
+MAX_DIMENSION = 2 * 6000  # about twice the size of a full 35mm images - if you hit this, you got a lot data.
 LAUNCH_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__)))

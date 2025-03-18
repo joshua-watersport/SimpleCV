@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 import cv2
 import time
@@ -8,7 +9,7 @@ from SimpleCV import Display
 #time.sleep(0.2)
 
 def printPrettyHeader(msg):
-    print( "*"*80 + "\n* %s *\n" % msg + "*"*80)
+    print("*"*80 + "\n* %s *\n" % msg + "*"*80)
 
 def _takeShots(cam, numPics, filename):
     start = time.time()
@@ -18,17 +19,17 @@ def _takeShots(cam, numPics, filename):
         img.save("%s_%d.png" % (filename, i))
     end = time.time()
     elapsed = end - start
-    print( "Took %f seconds" % elapsed)
+    print("Took %f seconds" % elapsed)
 
 def _takeManyVimbaShots(idx):
     c = VimbaCamera()
-    print( "_takeManyVimbaShots %d" % idx)
+    print("_takeManyVimbaShots %d" % idx)
 
     _takeShots(c, 10, "cam_vimba%d" % idx)
 
 def _takeAVTManyShots(idx):
     c = AVTCamera()
-    print( "_takeAVTManyShots %d" % idx)
+    print("_takeAVTManyShots %d" % idx)
 
     _takeShots(c, 10, "cam_avtnative%d" % idx)
 
@@ -46,7 +47,7 @@ def test_getImageDisplay():
     display = Display()
     img.save(display)
     img.save("test_getImage_scv_display2.png")
-    print( "test_getImage_scv_display2.png saved")
+    print "test_getImage_scv_display2.png saved"
 """
 
 
@@ -85,10 +86,10 @@ def test_AVT_takeManyShots():
 """
 def test_makeLotsOfCamera():
     numIter = 1000
-    print( "Creating %d cameras..." % numIter)
+    print "Creating %d cameras..." % numIter
     start = time.time()
     for i in range(numIter):
-        print( "At camera=%d" % i)
+        print "At camera=%d" % i
         cam = VimbaCamera()
         img = cam.getImage()
     end = time.time()

@@ -21,8 +21,8 @@ def process_eyes(image, eyes):
         return (None, None, None)
 
 
-def draw_glasses(image, a, glasses):
-    dx, dy, right_eye = a
+def draw_glasses(image, xxx_todo_changeme, glasses):
+    (dx, dy, right_eye) = xxx_todo_changeme
     rotation = 0.5*dy
     try:
         new_glasses = glasses.scale(int(2.75*dx), right_eye.height())

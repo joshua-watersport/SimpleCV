@@ -83,6 +83,10 @@ class ColorModel:
 
         **EXAMPLE**
 
+        >>> cm = ColorModel()
+        >>> cm.add(Image("lenna))
+        >>> cm.clear()
+
         """
         self.mData = {}
 
@@ -102,6 +106,10 @@ class ColorModel:
 
         **EXAMPLE**
 
+        >>> cm = ColorModel()
+        >>> cm.add(Image("lenna))
+        >>> cm.clear()
+
         """
         self.mData.update(self._makeCanonical(data))
 
@@ -120,6 +128,10 @@ class ColorModel:
         Nothings.
 
         **EXAMPLE**
+
+        >>> cm = ColorModel()
+        >>> cm.add(Image("lenna))
+        >>> cm.remove(Color.BLACK)
 
         """
         self.mData = dict.fromkeys(set(self.mData) ^ set(self._makeCanonical(data)), 1)
@@ -186,7 +198,7 @@ class ColorModel:
 
        """
         #reverse the color, cast to uint8, right shift, convert to string, check dict
-        return self.mData.has_key(np.right_shift(np.cast['uint8'](c[::-1]), self.mBits).tostring())
+        return np.right_shift(np.cast['uint8'](c[::-1]), self.mBits).tostring() in self.mData
 
     def setIsForeground(self):
         """
@@ -236,6 +248,12 @@ class ColorModel:
         Nothing.
 
         **EXAMPLE**
+
+        >>> cm = ColorModel()
+        >>> cm.load("myColors.txt")
+        >>> cm.add(Color.RED)
+        >>> cm.add(Color.BLUE)
+        >>> cm.save("mymodel)
 
         """
         self.mData =  load(open(filename))

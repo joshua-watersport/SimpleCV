@@ -73,7 +73,7 @@ foreach my $lib (@homebrew_libs) {
 
     my $newpath = $buildpath . "/usr/local/".$relpath;
     `cp $fullpath $newpath`;
-    print( "copying $fullpath -> $newpath \n";)
+    print "copying $fullpath -> $newpath \n";
     }, $version_path);
 }
 
