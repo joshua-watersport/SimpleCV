@@ -28,7 +28,6 @@ import copy # for deep copy
 import numpy as np
 import scipy.spatial.distance as spsd
 import scipy.cluster.vq as cluster #for kmeans
-import pygame as pg
 import platform
 import copy
 import types
@@ -45,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler
 from io import StringIO
 from numpy import int32
 from numpy import uint8
-from SimpleCV.EXIF import *
+from EXIF import *
 from pygame import gfxdraw
 from pickle import *
 
